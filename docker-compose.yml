@@ -1,0 +1,279 @@
+version: '3'
+services:
+  # rabbit
+  rabbitmq:
+    image: rabbitmq:3
+    environment:
+      - RABBITMQ_DEFAULT_VHOST=iot
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+    networks:
+      - webnet
+
+  # database
+  mongo:
+    image: mongo:3.6
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+      - ./db-config:/etc/mongo
+    command:
+      - "-f"
+      - "/etc/mongo/mongod.conf"
+    networks:
+      - webnet
+
+  # gateway-proxy
+  gateway-proxy:
+    image: thuandv7/iot-gateway-nginx
+    env_file: .env
+    ports:
+      - "5000:5000"     # The HTTP port
+    networks:
+      - webnet
+
+  # auth:5001
+  iot-auth-api:
+    image: thuandv7/iot-auth-api
+    ports:
+      - 5001:5001
+    env_file: .env
+    networks:
+      - webnet
+
+  # category:5002
+  iot-category-api:
+    image: thuandv7/iot-category-api
+    ports:
+      - 5002:5002
+    env_file: .env
+    networks:
+      - webnet
+    volumes:
+      - ./output:/usr/src/app/output
+
+  # station-auto:5003
+  iot-station-auto-api:
+    image: thuandv7/iot-station-auto-api
+    ports:
+      - 5003:5003
+    env_file: .env
+    networks:
+      - webnet
+
+  # data-station-auto:5004
+  iot-data-station-auto-api:
+    image: thuandv7/iot-data-station-auto-api
+    ports:
+      - 5004:5004
+    env_file: .env
+    networks:
+      - webnet
+    volumes:
+      - ./public:/usr/src/app/public
+
+  # admin:5005
+  iot-admin-api:
+    image: thuandv7/iot-admin-api
+    ports:
+      - 5005:5005
+    env_file: .env
+    networks:
+      - webnet
+
+  # role:5006
+  iot-role-api:
+    image: thuandv7/iot-role-api
+    ports:
+      - 5006:5006
+    env_file: .env
+    networks:
+      - webnet
+
+  # role:5007
+  iot-notify-api:
+    image: thuandv7/iot-notify-api
+    ports:
+      - 5007:5007
+    env_file: .env
+    networks:
+      - webnet
+
+  # role:5008
+  iot-fcm-api:
+    image: thuandv7/iot-fcm-api
+    ports:
+      - 5008:5008
+    env_file: .env
+    networks:
+      - webnet
+
+  # ftp: 5009, sampling: 5010
+
+  # database:5011
+  iot-database-api:
+    image: thuandv7/iot-database-api
+    ports:
+      - 5011:5011
+    env_file: .env
+    networks:
+      - webnet
+
+  # support: 5014
+  iot-support-api:
+    image: thuandv7/iot-support-api
+    ports:
+      - 5014:5014
+    env_file: .env
+    networks:
+      - webnet
+
+  # aqi: 5015
+  #iot-aqi-api:
+  #  image: thuandv7/iot-aqi-api
+  #  ports:
+  #    - 5015:5015
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+  #  volumes:
+  #    - ./public:/usr/src/app/public
+  
+  # wqi: 5017
+  #iot-wqi-api:
+  #  image: thuandv7/iot-wqi-api
+  #  ports:
+  #    - 5017:5017
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+
+  # qa: 5016
+  iot-qa-api:
+    image: thuandv7/iot-qa-api
+    ports:
+      - 5016:5016
+    env_file: .env
+    networks:
+      - webnet
+
+  # station-fixed:5018
+  #iot-station-fixed-api:
+  #  image: thuandv7/iot-station-fixed-api
+  #  ports:
+  #    - 5018:5018
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+  #  volumes:
+  #    - ./public:/usr/src/app/public
+
+  # data-station-fixed:5019
+  #iot-data-station-fixed-api:
+  #  image: thuandv7/iot-data-station-fixed-api
+  #  ports:
+  #    - 5019:5019
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+  #  volumes:
+  #    - ./public:/usr/src/app/public
+
+  # camera: 5020
+  #iot-camera-api:
+  #  image: thuandv7/iot-camera-api
+  #  ports:
+  #    - 5020:5020
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+
+  # web-public
+  #iot-web-public-api:
+  #  image: thuandv7/iot-web-public-api
+  #  ports:
+  #    - 5021:5021
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+  #  volumes:
+  #    - ./output:/usr/src/app/output
+  #    - ./public:/usr/src/app/public
+
+  # MOBILE: 5022
+  #iot-mobile-api:
+  #  image: thuandv7/iot-mobile-api
+  #  ports:
+  #    - 5022:5022
+  #  env_file: .env
+  #  networks:
+  #    - webnet
+  #  volumes:
+  #    - ./public:/usr/src/app/public
+
+  iot-crawler-api:
+    image: thuandv7/iot-crawler-api
+    ports:
+      - 5025:5025
+    env_file: .env
+    networks:
+      - webnet
+    volumes:
+      - ./output:/usr/src/app/output
+  
+
+  # media: 1234
+  iot-media-api:
+    image: thuandv7/iot-media-api
+    ports:
+      - 1234:1234
+    env_file: .env
+    networks:
+      - webnet
+    volumes:
+      - ./uploads:/usr/src/app/public/uploads
+
+  # watch: 5050
+  iot-watch-api:
+    image: thuandv7/iot-watch-api
+    ports:
+      - 5050:5050
+    env_file: .env
+    networks:
+      - webnet
+
+
+  # web: 5555
+  fago-web:
+    image: thuandv7/iot-web
+    ports:
+      - 5555:5555
+    env_file: .env
+    networks:
+      - webnet
+
+  # web: 7000
+  web-admin-deployment:
+    image: thuandv7/iot-web-admin
+    ports:
+     - 7000:7000
+    env_file: .env
+    networks:
+      - webnet
+  # API proccess AQI-WQI
+  #cron-aqi-wqi-api:
+  #  image: thuandv7/iot-aqi-wqi-api
+  #  env_file: .env
+  #  networks:
+  #   - webnet
+  # API proccess FTP-TRANSFER
+  #cron-ftp-transfer-api:
+  #  image: thuandv7/iot-ftp-transfer-api
+  #  env_file: .env
+  #  networks:
+  #   - webnet
+networks:
+  webnet:
